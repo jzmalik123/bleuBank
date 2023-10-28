@@ -1,0 +1,19 @@
+.logo-header{
+    background-color: black;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+.document-list {
+    .list-group-item{
+        margin: 3% 5%;
+        background-color: #f6f6f7;
+        display: flex;
+        align-items: center;
+
+        .list-group-item-icon{
+            margin-left:2%;
+            margin-right: 2%;
+        }
+    }
+}
