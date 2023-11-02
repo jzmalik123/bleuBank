@@ -103,19 +103,43 @@
 
                         <div class="text-center" style="background-color: #8a72e5;width: 20%;margin-left: auto;margin-right: auto;color: white;">Front Side</div>
                         <div id="front-side" style="width: 100%;height: auto;margin-left: auto;margin-right: auto;" class="text-center"></div>
-                        <img id="captured-image" src="" style="width: 320px; height: 240px;" class="hide"></img>
 
-                        <div id="take-picture-buttons" class="block-options text-center">
+                        <div class="block-options text-center take-picture-buttons">
                             <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-success" data-toggle="tooltip" title="" data-original-title="Take Picture" onclick="previewImage()"><i class="fa fa-camera"></i></a>
                             <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-primary" data-toggle="tooltip" title="" data-original-title="Flip Camera" onclick="flipCamera()"><i class="gi gi-transfer"></i></a>
                         </div>
-                        <div id="save-picture-buttons" class="block-options text-center hide">
+                        <div class="block-options text-center save-picture-buttons hide">
                             <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-success" data-toggle="tooltip" title="" data-original-title="Keep Picture" onclick="captureImage()"><i class="fa fa-check"></i></a>
                             <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-danger" data-toggle="tooltip" title="" data-original-title="Try Again" onclick="rejectImage()"><i class="fa fa-times"></i></a>
                         </div>
                         <canvas id="photo-canvas" style="display: none;"></canvas>
                     </div>
                     <!-- END Third Step -->
+
+                    <!-- Fourth Step -->
+                    <div id="fourth" class="step">
+                        <div class="text-center logo-header">
+                            <img width="20%" src="{% static 'img/logo.png' %}">
+                        </div>
+
+                        <h2 class="text-center"><strong>Verify Your Identity</strong></h2>
+
+                        <p class="text-center">You'll need to take a photo of your ID Card.</p>
+
+                        <div class="text-center" style="background-color: #8a72e5;width: 20%;margin-left: auto;margin-right: auto;color: white;">Back Side</div>
+                        <div id="back-side" style="width: 100%;height: auto;margin-left: auto;margin-right: auto;" class="text-center"></div>
+
+                        <div class="block-options text-center take-picture-buttons">
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-success" data-toggle="tooltip" title="" data-original-title="Take Picture" onclick="previewImage()"><i class="fa fa-camera"></i></a>
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-primary" data-toggle="tooltip" title="" data-original-title="Flip Camera" onclick="flipCamera()"><i class="gi gi-transfer"></i></a>
+                        </div>
+                        <div class="block-options text-center save-picture-buttons hide">
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-success" data-toggle="tooltip" title="" data-original-title="Keep Picture" onclick="captureImage()"><i class="fa fa-check"></i></a>
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-danger" data-toggle="tooltip" title="" data-original-title="Try Again" onclick="rejectImage()"><i class="fa fa-times"></i></a>
+                        </div>
+                        <canvas id="photo-canvas" style="display: none;"></canvas>
+                    </div>
+                    <!-- END Fourth Step -->
 
                     <!-- Form Buttons -->
                     <div class="form-group form-actions text-center">
@@ -161,6 +185,11 @@
             });
 
             Webcam.attach("#front-side");
+        } else if(step == 4){
+            rejectImage()
+            Webcam.reset()
+            Webcam.attach('#back-side')
+
         }
     })
     $('#back').on("click", function(){
@@ -169,44 +198,18 @@
 
     function previewImage(){
         Webcam.freeze()
-        $('#save-picture-buttons').removeClass('hide')
-        $('#take-picture-buttons').addClass('hide')
+        $('.save-picture-buttons').removeClass('hide')
+        $('.take-picture-buttons').addClass('hide')
     }
 
     function rejectImage(){
         Webcam.unfreeze()
-        $('#save-picture-buttons').addClass('hide')
-        $('#take-picture-buttons').removeClass('hide')
+        $('.save-picture-buttons').addClass('hide')
+        $('.take-picture-buttons').removeClass('hide')
     }
 
     function captureImage() {
-        Webcam.snap(
-            function(data_uri) {
-                // Create an offscreen canvas
-                var canvas = document.createElement('canvas');
-                canvas.width = 320;
-                canvas.height = 240;
-
-                // Draw the captured image on the canvas, centering it
-                var context = canvas.getContext('2d');
-                var image = new Image();
-                image.onload = function() {
-                var x = (image.width - 320) / 2;
-                var y = (image.height - 240) / 2;
-                context.drawImage(image, x, y, 320, 240, 0, 0, 320, 240);
-
-                // Convert the canvas content to a data URI
-                var croppedDataUri = canvas.toDataURL('image/jpeg', 0.9);
-
-                // Do something with the cropped image data URI
-                capturedImage.attr("src", croppedDataUri);
-
-                capturedImage.removeClass('hide')
-
-                frontSideCamera.classList.add('hide')
-            };
-            image.src = data_uri;
-        });
+        $('#next').click()
     }
     // Function to toggle between front and back cameras
     function toggleCamera() {
