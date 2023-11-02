@@ -93,52 +93,33 @@
 
                     <!-- Third Step -->
                     <div id="third" class="step">
-                        <!-- Step Info -->
-                        <div class="wizard-steps">
-                            <div class="row">
-                                <div class="col-xs-4 done">
-                                    <span><i class="fa fa-check"></i></span>
-                                </div>
-                                <div class="col-xs-4 done">
-                                    <span><i class="fa fa-check"></i></span>
-                                </div>
-                                <div class="col-xs-4 active">
-                                    <span>3. Extras</span>
-                                </div>
-                            </div>
+                        <div class="text-center logo-header">
+                            <img width="20%" src="{% static 'img/logo.png' %}">
                         </div>
-                        <!-- END Step Info -->
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="example-bio">Bio</label>
-                            <div class="col-md-8">
-                                <textarea id="example-bio" name="example-bio" rows="5" class="form-control" placeholder="Tell us your story.."></textarea>
-                            </div>
+
+                        <h2 class="text-center"><strong>Verify Your Identity</strong></h2>
+
+                        <p class="text-center">You'll need to take a photo of your ID Card.</p>
+
+                        <div class="text-center" style="background-color: #8a72e5;width: 20%;margin-left: auto;margin-right: auto;color: white;">Front Side</div>
+                        <div id="front-side" style="width: 100%;height: auto;margin-left: auto;margin-right: auto;" class="text-center"></div>
+                        <img id="captured-image" src="" style="width: 320px; height: 240px;" class="hide"></img>
+
+                        <div id="take-picture-buttons" class="block-options text-center">
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-success" data-toggle="tooltip" title="" data-original-title="Take Picture" onclick="previewImage()"><i class="fa fa-camera"></i></a>
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-primary" data-toggle="tooltip" title="" data-original-title="Flip Camera" onclick="flipCamera()"><i class="gi gi-transfer"></i></a>
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="example-newsletter">Newsletter</label>
-                            <div class="col-md-6">
-                                <div class="checkbox">
-                                    <label for="example-newsletter">
-                                        <input type="checkbox" id="example-newsletter" name="example-newsletter"> Sign up
-                                    </label>
-                                </div>
-                            </div>
+                        <div id="save-picture-buttons" class="block-options text-center hide">
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-success" data-toggle="tooltip" title="" data-original-title="Keep Picture" onclick="captureImage()"><i class="fa fa-check"></i></a>
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-danger" data-toggle="tooltip" title="" data-original-title="Try Again" onclick="rejectImage()"><i class="fa fa-times"></i></a>
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-4 control-label"><a href="#modal-terms" data-toggle="modal">Terms</a></label>
-                            <div class="col-md-6">
-                                <label class="switch switch-primary" for="example-terms">
-                                    <input type="checkbox" id="example-terms" name="example-terms" value="1">
-                                    <span data-toggle="tooltip" title="I agree to the terms!"></span>
-                                </label>
-                            </div>
-                        </div>
+                        <canvas id="photo-canvas" style="display: none;"></canvas>
                     </div>
                     <!-- END Third Step -->
 
                     <!-- Form Buttons -->
-                    <div class="form-group form-actions">
-                        <div class="col-md-8 col-md-offset-4">
+                    <div class="form-group form-actions text-center">
+                        <div id="kyc-verification-form-buttons" class="col-md-8 col-md-offset-4">
                             <input type="reset" class="btn btn-sm btn-warning" id="back" value="Back">
                             <input type="submit" class="btn btn-sm btn-primary" id="next" value="Next">
                         </div>
@@ -157,4 +138,90 @@
 <!-- Load and execute javascript code used only in this page -->
 <script src="{% static 'js/pages/formsWizard.js' %}"></script>
 <script>$(function(){ FormsWizard.init(); });</script>
+<script src="{% static 'js/vendor/webcam.min.js' %}"></script>
+<script>
+    var frontSideCamera = document.getElementById("front-side");
+    var flipCameraButton = document.getElementById("flip-camera");
+    var capturedImage = $('#captured-image')
+
+    var step = 1;
+
+    $('#next').on("click", function(){
+        step = step + 1;
+        if(step == 3){
+            $('#kyc-verification-form-buttons').hide()
+
+            Webcam.set({
+                width: 320,
+                height: 240,
+                dest_width: 320,
+                dest_height: 240,
+                image_format: 'jpeg',
+                jpeg_quality: 90
+            });
+
+            Webcam.attach("#front-side");
+        }
+    })
+    $('#back').on("click", function(){
+        step = step - 1;
+    })
+
+    function previewImage(){
+        Webcam.freeze()
+        $('#save-picture-buttons').removeClass('hide')
+        $('#take-picture-buttons').addClass('hide')
+    }
+
+    function rejectImage(){
+        Webcam.unfreeze()
+        $('#save-picture-buttons').addClass('hide')
+        $('#take-picture-buttons').removeClass('hide')
+    }
+
+    function captureImage() {
+        Webcam.snap(
+            function(data_uri) {
+                // Create an offscreen canvas
+                var canvas = document.createElement('canvas');
+                canvas.width = 320;
+                canvas.height = 240;
+
+                // Draw the captured image on the canvas, centering it
+                var context = canvas.getContext('2d');
+                var image = new Image();
+                image.onload = function() {
+                var x = (image.width - 320) / 2;
+                var y = (image.height - 240) / 2;
+                context.drawImage(image, x, y, 320, 240, 0, 0, 320, 240);
+
+                // Convert the canvas content to a data URI
+                var croppedDataUri = canvas.toDataURL('image/jpeg', 0.9);
+
+                // Do something with the cropped image data URI
+                capturedImage.attr("src", croppedDataUri);
+
+                capturedImage.removeClass('hide')
+
+                frontSideCamera.classList.add('hide')
+            };
+            image.src = data_uri;
+        });
+    }
+    // Function to toggle between front and back cameras
+    function toggleCamera() {
+      const constraints = {
+        video: { facingMode: videoElement.facingMode === 'user' ? 'environment' : 'user' }
+      };
+
+      navigator.mediaDevices.getUserMedia(constraints)
+        .then(function (stream) {
+          videoElement.srcObject = stream;
+          videoElement.facingMode = constraints.video.facingMode;
+        })
+        .catch(function (error) {
+          console.error('Error switching camera:', error);
+        });
+    }
+</script>
 {% endblock %}
