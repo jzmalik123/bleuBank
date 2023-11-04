@@ -141,6 +141,31 @@
                     </div>
                     <!-- END Fourth Step -->
 
+                    <!-- Fourth Step -->
+                    <div id="fifth" class="step">
+                        <div class="text-center logo-header">
+                            <img width="20%" src="{% static 'img/logo.png' %}">
+                        </div>
+
+                        <h2 class="text-center"><strong>Verify Your Identity</strong></h2>
+
+                        <p class="text-center">You'll need to take a photo of your ID Card.</p>
+
+                        <div class="text-center" style="background-color: #8a72e5;width: 20%;margin-left: auto;margin-right: auto;color: white;">Your Selfie</div>
+                        <div id="user-selfie" style="width: 100%;height: auto;margin-left: auto;margin-right: auto;" class="text-center"></div>
+
+                        <div class="block-options text-center take-picture-buttons">
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-success" data-toggle="tooltip" title="" data-original-title="Take Picture" onclick="previewImage()"><i class="fa fa-camera"></i></a>
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-primary" data-toggle="tooltip" title="" data-original-title="Flip Camera" onclick="flipCamera()"><i class="gi gi-transfer"></i></a>
+                        </div>
+                        <div class="block-options text-center save-picture-buttons hide">
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-success" data-toggle="tooltip" title="" data-original-title="Keep Picture" onclick="captureImage()"><i class="fa fa-check"></i></a>
+                            <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-danger" data-toggle="tooltip" title="" data-original-title="Try Again" onclick="rejectImage()"><i class="fa fa-times"></i></a>
+                        </div>
+                        <canvas id="photo-canvas" style="display: none;"></canvas>
+                    </div>
+                    <!-- END Fourth Step -->
+
                     <!-- Form Buttons -->
                     <div class="form-group form-actions text-center">
                         <div id="kyc-verification-form-buttons" class="col-md-8 col-md-offset-4">
@@ -190,6 +215,20 @@
             Webcam.reset()
             Webcam.attach('#back-side')
 
+        } else if(step == 5){
+            rejectImage()
+            Webcam.reset()
+            Webcam.set({
+                width: 374,
+                height: 468,
+                dest_width: 320,
+                dest_height: 468,
+                image_format: 'jpeg',
+                jpeg_quality: 100
+            });
+            Webcam.attach('#user-selfie')
+            $('#user-selfie video').removeAttr('style')
+            $('#user-selfie').append('<div class="take-selfie"></div>');
         }
     })
     $('#back').on("click", function(){
