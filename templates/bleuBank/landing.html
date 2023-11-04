@@ -141,7 +141,7 @@
                     </div>
                     <!-- END Fourth Step -->
 
-                    <!-- Fourth Step -->
+                    <!-- Fifth Step -->
                     <div id="fifth" class="step">
                         <div class="text-center logo-header">
                             <img width="20%" src="{% static 'img/logo.png' %}">
@@ -164,7 +164,21 @@
                         </div>
                         <canvas id="photo-canvas" style="display: none;"></canvas>
                     </div>
-                    <!-- END Fourth Step -->
+                    <!-- END Fifth Step -->
+
+                    <!-- Sixth Step -->
+                    <div id="sixth" class="step">
+                        <div class="text-center logo-header">
+                            <img width="20%" src="{% static 'img/logo.png' %}">
+                        </div>
+
+                        <h2 class="text-center"><strong>Verify Your Identity</strong></h2>
+
+                        <p class="text-center">We are verifying your identity...</p>
+
+                        <div class="text-center"><i class="fa fa-spinner fa-spin fa-5x"></i></div>
+                    </div>
+                    <!-- END Sixth Step -->
 
                     <!-- Form Buttons -->
                     <div class="form-group form-actions text-center">
@@ -195,6 +209,10 @@
 
     var step = 1;
 
+    const FRONT_SIDE = 3, BACK_SIDE = 4, USER_SELFIE = 5;
+
+    IMAGE_FILES = {}
+
     $('#next').on("click", function(){
         step = step + 1;
         if(step == 3){
@@ -206,7 +224,7 @@
                 dest_width: 320,
                 dest_height: 240,
                 image_format: 'jpeg',
-                jpeg_quality: 90
+                jpeg_quality: 100
             });
 
             Webcam.attach("#front-side");
@@ -229,6 +247,8 @@
             Webcam.attach('#user-selfie')
             $('#user-selfie video').removeAttr('style')
             $('#user-selfie').append('<div class="take-selfie"></div>');
+        } else if(step == 6){
+            //debugger
         }
     })
     $('#back').on("click", function(){
@@ -248,7 +268,16 @@
     }
 
     function captureImage() {
+        Webcam.snap(
+            function(data_uri) {
+                var base64 = data_uri.split(',')[1];
+                var binaryData = atob(base64);
+                var blob = new Blob([new Uint8Array(Array.from(binaryData).map(char => char.charCodeAt(0)))], { type: 'image/jpeg' });
+                IMAGE_FILES[step] = blob
+            }
+        );
         $('#next').click()
+
     }
     // Function to toggle between front and back cameras
     function toggleCamera() {
