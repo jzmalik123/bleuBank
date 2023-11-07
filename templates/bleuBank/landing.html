@@ -167,16 +167,28 @@
                     <!-- END Fifth Step -->
 
                     <!-- Sixth Step -->
-                    <div id="sixth" class="step">
+                    <div id="sixth" class="step text-center">
                         <div class="text-center logo-header">
                             <img width="20%" src="{% static 'img/logo.png' %}">
                         </div>
 
                         <h2 class="text-center"><strong>Verify Your Identity</strong></h2>
 
-                        <p class="text-center">We are verifying your identity...</p>
+                        <div id="verification-in-progress">
+                            <p class="text-center">We are verifying your identity...</p>
+                            <div class="text-center"><i class="fa fa-spinner fa-spin fa-5x"></i></div>
+                        </div>
 
-                        <div class="text-center"><i class="fa fa-spinner fa-spin fa-5x"></i></div>
+                        <div id="verification-failed" class="alert alert-danger alert-dismissable btn hide">
+                            <h4><i class="fa fa-times-circle"></i> Error</h4>
+                            <span id="error-message"></span>
+                        </div>
+
+                        <div id="verification-success" class="alert alert-success alert-dismissable btn hide">
+                            <h4><i class="fa fa-times-circle"></i> Success</h4>
+                            <span id="success-message">You have been verified</span>
+                        </div>
+
                     </div>
                     <!-- END Sixth Step -->
 
@@ -209,7 +221,7 @@
 
     var step = 1;
 
-    const FRONT_SIDE = 3, BACK_SIDE = 4, USER_SELFIE = 5;
+    const FRONT_SIDE = 3, BACK_SIDE = 4, SELFIE_IMAGE = 5;
 
     IMAGE_FILES = {}
 
@@ -237,18 +249,50 @@
             rejectImage()
             Webcam.reset()
             Webcam.set({
-                width: 374,
-                height: 468,
+                width: 320,
+                height: 240,
                 dest_width: 320,
-                dest_height: 468,
+                dest_height: 240,
                 image_format: 'jpeg',
                 jpeg_quality: 100
             });
             Webcam.attach('#user-selfie')
-            $('#user-selfie video').removeAttr('style')
+            //$('#user-selfie video').removeAttr('style')
             $('#user-selfie').append('<div class="take-selfie"></div>');
         } else if(step == 6){
-            //debugger
+            var formData = new FormData();
+
+            formData.append('front_side', IMAGE_FILES[FRONT_SIDE])
+            formData.append('back_side', IMAGE_FILES[BACK_SIDE])
+            formData.append('selfie_image', IMAGE_FILES[SELFIE_IMAGE])
+
+            $.ajax({
+              type: 'POST',
+              url: 'single_kyc_verification', // Replace with the actual URL
+              data: formData, // Use the FormData object
+              processData: false, // Set processData to false to prevent jQuery from processing the data
+              contentType: false, // Set contentType to false to let the browser set the content type
+              beforeSend: function(xhr, settings) {
+                // Get the CSRF token from a cookie or another source
+                const csrfToken = getCSRFToken(); // Implement this function to retrieve the token
+                xhr.setRequestHeader('X-CSRFToken', csrfToken);
+              },
+              success: function (data) {
+                  $('#verification-in-progress').hide()
+                  if(data.error){
+                      $('#error-message').html(data.error)
+                      $('#verification-failed').removeClass('hide')
+                  } else {
+                      $('#verification-success').removeClass('hide')
+                  }
+                  // Handle the success response here
+                  console.log('POST request was successful', data);
+              },
+              error: function (error) {
+                // Handle any errors that occur
+                console.error('POST request failed', error);
+              }
+            });
         }
     })
     $('#back').on("click", function(){
@@ -293,6 +337,14 @@
         .catch(function (error) {
           console.error('Error switching camera:', error);
         });
+    }
+
+    function getCSRFToken() {
+        const csrfCookie = document.cookie.split('; ').find(cookie => cookie.startsWith('csrftoken='));
+        if (csrfCookie) {
+            return csrfCookie.split('=')[1];
+        }
+        return '';
     }
 </script>
 {% endblock %}
