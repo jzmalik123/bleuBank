@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-=bfdep^hsnfczayglnb8=xu+iz-$yaemdlasdvoi6tc&c48lhy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["bleu-bank.com", "www.bleu-bank.com"]
 
 
 # Application definition
@@ -116,12 +116,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = ''
 
-STATIC_URL = '/static/'
+STATIC_URL = '/sandbox/static/'
+#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-STATICFILES_DIRS = ('static',)
+#STATICFILES_DIRS = ('static',)
 
+#STATIC_URL = "/sandbox/static/"
+#STATICFILES_DIRS = [BASE_DIR/"static", BASE_DIR/"staticfiles"]
+#STATIC_ROOT = "/home/bleupkmk/sandbox_new/static"
+
+#STATIC_ROOT = ''
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

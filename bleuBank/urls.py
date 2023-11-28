@@ -24,4 +24,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.landing, name="landing"),
     path('single_kyc_verification', views.single_kyc_verification, name="singe_kyc_verification")
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static('/static/', document_root=settings.STATIC_ROOT)
